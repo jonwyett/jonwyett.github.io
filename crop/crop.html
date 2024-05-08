@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" />
+    <script>
+        /*  https://fengyuanchen.github.io/photo-editor/
+            https://fengyuanchen.github.io/cropperjs/
+            https://github.com/alexcorvi/heic2any/tree/master
+
+        */
+        function showModal(show, val) {
+            const modal = document.getElementById('myModal');
+            if (show) {
+                modal.style.display = 'block';
+            } else {
+                modal.style.display = 'none';
+            }
+            if (typeof val !== 'undefined') {
+                var caption = document.querySelector('#myModal .modal-content p');
+                caption.textContent = val;
+            }
+        }
+        function modalCaption(val) {
+            var caption = document.querySelector('#myModal .modal-content p');
+            caption.textContent = val;
+        }
+
+        window.onload = function() {
+            var image = document.getElementById('image');
+            var input = document.getElementById('imageInput');
+            var button = document.getElementById('cropButton');
+            var cropper;
+            var originalFileName; // Variable to store the original file name without extension
+
+            input.addEventListener('change', function(e) {
+                var files = e.target.files;
+                if (files && files.length > 0) {
+                    var file = files[0];
+                    if (file.name.endsWith(".heic")) {
+                        showModal(true, "Converting...");
+                        originalFileName = file.name.replace(/\.[^/.]+$/, "");
+                        
+                        heic2any({
+                            blob:file
+                        })
+                        .then((conversionResult) => {
+                            showModal(false);
+                            var objectURL = URL.createObjectURL(conversionResult);
+                            image.src = objectURL; // Set the image source to the converted JPEG
+                            image.style.display = 'block';
+
+                            if (cropper) {
+                                cropper.destroy(); // Destroy the previous instance of Cropper if it exists
+                            }
+
+                            // Initialize Cropper with the newly converted image
+                            cropper = new Cropper(image, {
+                                aspectRatio: 1,
+                                viewMode: 1,
+                            });
+
+                            button.style.display = 'inline-block'; // Make the button visible
+                            showModal(false);
+                        }).catch((e) => {
+                            showModal(false);
+                            window.alert(JSON.stringify(e));
+                        });
+    
+
+                    } else if (file.type.match(/^image\/(jpeg|png|gif|svg\+xml)$/)) {
+                        showModal(true, 'Loading...');
+                        var reader = new FileReader();
+                        reader.onload = function(e) {
+                            image.src = e.target.result;
+                            image.style.display = 'block';
+
+                            if (cropper) {
+                                cropper.destroy();
+                            }
+
+                            cropper = new Cropper(image, {
+                                aspectRatio: 1,
+                                viewMode: 1,
+                            });
+                            showModal(false);
+                            button.style.display = 'inline-block';
+                        };
+                        reader.readAsDataURL(file);
+
+                        // Extract file name without extension
+                        originalFileName = file.name.replace(/\.[^/.]+$/, "");
+                        
+                    } else {
+                        showModal(false);
+                        window.alert('File type not supported. Please select a supported image type.');
+                    }
+                }
+            });
+
+            button.addEventListener('click', function() {
+                if (!cropper) {
+                    window.alert('Something went wrong...');
+                }
+
+                cropper.getCroppedCanvas({
+                    width: 400,
+                    height: 400
+                }).toBlob(function(blob) {
+                    var url = URL.createObjectURL(blob);
+                    var a = document.createElement('a');
+                    a.href = url;
+                    // Use the original file name with "_crop" appended
+                    a.download = originalFileName + '_crop.jpg';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }, 'image/jpeg');
+            });
+        };
+
+
+
+    </script>
+    <style>
+
+        * {
+        box-sizing: border-box;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Roboto', Arial, sans-serif;
+            overflow: hidden; /* Prevents scrolling on the body */
+            
+        }
+
+        header, footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            left: 0;
+            right: 0;
+            height: 2.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        header {
+            top: 0;
+            border-bottom: 2px solid #AAAAAA;
+        }
+
+        footer {
+            bottom: 0;
+            border-top: 2px solid #AAAAAA;
+        }
+
+        .fixed-body {
+            position: absolute;
+            top: 40px; /* Adjust based on the height of the header */
+            bottom: 0px; /* Adjust based on the height of the footer */
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /*background-color: lightcoral;*/
+        }
+
+        .scrollable-section {
+            background-color: #f5f5f5; /* Added for better visibility */
+            width: calc(100% - 24px); /* Subtract double the margin for left and right */
+            height: calc(100% - 24px); /* Subtract double the margin for top and bottom */
+            overflow-y: auto; /* Enables scrolling */
+            border: 2px solid #aaaaaa;
+            border-radius: 4px;
+            /*box-shadow: 0px 4px 8px rgba(0, 0, 0, .25);*/
+        }
+
+        .back-btn {
+            color: #fff;
+            padding: 5px 20px; /* Give more horizontal padding for a spacious look */
+            cursor: pointer;
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center; /* Vertically center the arrow */
+            justify-content: center;
+            font-size: 24px; /* Adjust size of the arrow if needed */
+            width: 3rem;
+            /*background-color: #444; */ /* Slightly darker shade than the header for distinction */
+        }
+
+        .back-btn:after {
+            content: "";
+            display: block;
+            height: 100%; /* Adjust the height of the vertical line if needed */
+            border-right: 2px solid #aaaaaa; /* Vertical line */
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
+
+        .back-btn:hover {
+            background-color: #666; /* Slightly lighter than the normal state */
+            color: #e0e0e0; /* Slightly darker text for contrast */
+        }
+
+        .star-btn {
+            color: #fff;
+            padding: 5px 20px; /* Consistent padding with the back button */
+            cursor: pointer;
+            position: absolute;
+            right: 0; /* Positioning it on the far right */
+            top: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center; /* Vertically center the arrow */
+            justify-content: center;
+            font-size: 24px; /* Adjust size of the arrow if needed */
+            width: 3rem;
+            /*background-color: #444;*/ /* Slightly darker shade than the header for distinction */
+        }
+
+        .star-btn:before {
+            content: "";
+            display: block;
+            height: 100%; /* Adjust the height of the vertical line if needed */
+            border-left: 2px solid #aaaa; /* Vertical line */
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        .star-btn:hover {
+            background-color: #666; /* Slightly lighter than the normal state */
+            color: #e0e0e0; /* Slightly darker text for contrast */
+        }
+
+        .refresh-btn {
+            color: #fff;
+            padding: 5px 20px; /* Give more horizontal padding for a spacious look */
+            cursor: pointer;
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center; /* Vertically center the arrow */
+            justify-content: center;
+            font-size: 24px; /* Adjust size of the arrow if needed */
+            width: 3rem;
+            /*background-color: #444; *//* Slightly darker shade than the header for distinction */
+        }
+
+        .refresh-btn:after {
+            content: "";
+            display: block;
+            height: 100%; /* Adjust the height of the vertical line if needed */
+            border-right: 2px solid #aaaaaa; /* Vertical line */
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
+
+        .refresh-btn:hover {
+            background-color: #666; /* Slightly lighter than the normal state */
+            color: #e0e0e0; /* Slightly darker text for contrast */
+        }
+
+        .export-btn {
+            color: #fff;
+            padding: 5px 20px; /* Consistent padding with the back button */
+            cursor: pointer;
+            position: absolute;
+            right: 0; /* Positioning it on the far right */
+            top: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center; /* Vertically center the arrow */
+            justify-content: center;
+            font-size: 24px; /* Adjust size of the arrow if needed */
+            width: 3rem;
+            /*background-color: #444;*/ /* Slightly darker shade than the header for distinction */
+        }
+
+        .export-btn:before {
+            content: "";
+            display: block;
+            height: 100%; /* Adjust the height of the vertical line if needed */
+            border-left: 2px solid #aaaa; /* Vertical line */
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        .export-btn:hover {
+            background-color: #666; /* Slightly lighter than the normal state */
+            color: #e0e0e0; /* Slightly darker text for contrast */
+        }
+
+        .action-img {
+            width: 2.0rem;
+            height: 2.0rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.6);
+            animation-name: fadeIn;
+            animation-duration: 0.15s;
+        }
+        .modal-content {
+            position: relative;
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 5px;
+            width: 80%;
+            max-width: 300px;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+            animation-name: fadeIn;
+            animation-duration: 0.25s;
+            text-align: center;
+        }
+        @keyframes fadeIn {
+            from {opacity: 0} 
+            to {opacity: 1}
+        }
+        @keyframes slideIn {
+            from {top: -300px; opacity: 0} 
+            to {top: 0; opacity: 1}
+        }
+    </style>
+
+</head>
+<body>
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+          <p>Loading...</p>
+        </div>
+      </div>
+
+    <header>
+        <!--<span class="back-btn" onclick="backFunction()"><img src="pics/Back-Light.png" class="action-img"></span>-->
+        <input type="file" id="imageInput" accept="image/jpeg,image/png,image/gif,image/svg+xml,image/heic">
+
+        
+        <button id="cropButton" style="display: none;">Crop and Download</button>
+        <!--<span class="star-btn" onclick="starFunction()"><img src="pics/Refresh-Light2.png" class="action-img"></span>-->
+    </header>
+
+    <div class="fixed-body">
+        <div class="scrollable-section">
+            <img id="image" style="max-width: 100%; display: none;">
+            <div id="target"></div>
+        </div>
+    </div>
+
+    <!--
+    <footer>
+    <span class="refresh-btn" onclick="refreshFunction()"><img src="pics/cog-custom.png" class="action-img"></span>
+        This is the fixed footer
+        <span for="" class="export-btn" onclick="exportFunction()"><img src="pics/export-light.png" class="action-img"></span>
+    </footer>
+    -->
+
+
+
+
+
+
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+    <script src="./heic2any_min.js"></script>
+</body>
+</html>
