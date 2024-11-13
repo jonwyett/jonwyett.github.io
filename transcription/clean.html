@@ -67,11 +67,12 @@ function removeTimestampsAndNewlines(text) {
     // This regex now also targets newlines and spaces surrounding the timestamp
     
     //Slack:
-    var regex = text.replace(/\d+:\d+:\d+\s*\n*|\d+:\d+\s*\n*/g, '');
+    var cleanedText = text.replace(/\d+:\d+:\d+\s*\n*|\d+:\d+\s*\n*:\s/gm, '').replace(/^\s+/gm, '');
+    //var cleanedText = text.replace(/\d+:\d+:\d+\s*\n*|\d+:\d+\s*\n*/g, '');
     
     //Premiere:
     //var regex = /(\d{2}):(\d{2}):(\d{2}):(\d{2}) - (\d{2}):(\d{2}):(\d{2}):(\d{2})/g;
-    var cleanedText = text.replace(regex, '');
+    //var cleanedText = text.replace(regex, '');
 
     
     return cleanedText ? cleanedText : "Error: Could not clean the transcript.";
