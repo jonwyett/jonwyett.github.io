@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transcript Cleaner</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body, html {
+            font-family: Arial, sans-serif;
+            padding: 0;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            height: 100px;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+    </style>
+    <script>
+        window.onload = function() {
+    document.getElementById('convertButton').addEventListener('click', function() {
+        var inputText = document.getElementById('inputText').value;
+        var outputText = removeTimestampsAndNewlines(inputText);
+        document.getElementById('outputText').value = outputText;
+    });
+};
+
+function removeTimestampsAndNewlines(text) {
+    if (!text) {
+        return "Please provide a transcript to clean.";
+    }
+    
+    
+
+    //TODO: Have this run both regex by setting the regex var so it cleans both
+    // This regex now also targets newlines and spaces surrounding the timestamp
+    
+    //Slack:
+    var cleanedText = text.replace(/\d+:\d+:\d+\s*\n*|\d+:\d+\s*\n*/g, '');
+    
+    //Premiere:
+    //var regex = /(\d{2}):(\d{2}):(\d{2}):(\d{2}) - (\d{2}):(\d{2}):(\d{2}):(\d{2})/g;
+    var cleanedText = text.replace(regex, '');
+
+    
+    return cleanedText ? cleanedText : "Error: Could not clean the transcript.";
+}
+
+
+
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Transcript Cleaner</h2>
+        <textarea id="inputText" placeholder="Paste your transcript here..."></textarea>
+        <button id="convertButton">Remove Timestamps</button>
+        <textarea id="outputText" placeholder="Cleaned transcript will appear here..." readonly></textarea>
+    </div>
+    
+</body>
+</html>
