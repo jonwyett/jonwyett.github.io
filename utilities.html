@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+    <title>FPC Utilities</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+        }
+        header {
+            background-color: #003467;
+            font-family: "EB Garamond", serif;
+            color: #fff;
+            text-align: center;
+            padding: 1rem;
+            position: fixed;
+            
+            top: 0;
+            width: 100%;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            border-bottom: 4px solid darkred;
+        }
+        .container {
+            margin-top: 80px; /* Space for the fixed header */
+            padding: 20px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            overflow-y: auto;
+        }
+        .listing {
+            display: flex;
+            align-items: center;
+            background-color: #fff;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+            text-decoration: none;
+            color: #333;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .listing:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        .listing img {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            margin-right: 15px;
+        }
+        .listing .text-content {
+            flex-grow: 1;
+        }
+        .listing h3 {
+            margin: 0 0 5px;
+            font-size: 1.2rem;
+        }
+        .listing p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>FPC Utilities</h1>
+    </header>
+    <div class="container">
+        <a href="./crop/crop.html" class="listing">
+            <img src="./img/cropper.png" alt="Icon 1">
+            <div class="text-content">
+                <h3>Credential Cropper</h3>
+                <p>This tool helps you crop photos to the correct aspect ratio for FPC credentials. It supports a variety of file types, including HEIC (iPhone format), and can also repair many issues with corrupt images. If FoJEMS doesn't accept your original file, try processing it with this utility first.</p>
+            </div>
+        </a>
+        <a href="./convert/convert.html" class="listing">
+            <img src="./img/heic-jpg.png" alt="Icon 2">
+            <div class="text-content">
+                <h3>iPhone Image Converter</h3>
+                <p>Effortlessly convert HEIC files from an iPhone into JPGs. This tool supports batch processing, allowing you to convert multiple files simultaneously for added convenience.</p>
+            </div>
+        </a>
+        <a href="./transcription/clean.html" class="listing">
+            <img src="./img/transcript.png" alt="Icon 2">
+            <div class="text-content">
+                <h3>Transcript Cleaner</h3>
+                <p>Clean up your transcripts by removing time-codes. Currently, this tool is optimized for use with transcripts generated in Slack.</p>
+            </div>
+        </a>
+        <!-- Repeat more listings as needed -->
+    </div>
+</body>
+</html>
