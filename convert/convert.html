@@ -29,7 +29,7 @@
                     let processedCount = 0; // Counter to track completed conversions
     
                     Array.from(files).forEach((file, index) => {
-                        if (file.name.endsWith(".heic")) {
+                        if (file.name.toLowerCase().endsWith(".heic")) {
                             let originalFileName = file.name.replace(/\.[^/.]+$/, "");
     
                             heic2any({
