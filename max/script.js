@@ -3,6 +3,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const navLeft = document.querySelector('.nav-left');
     const navRight = document.querySelector('.nav-right');
     let currentSlide = 0;
+    let isPinching = false;
+    let touchStartX = 0;
+    let touchStartY = 0;
 
     // Show first slide
     slides[0].classList.add('active');
@@ -42,28 +45,38 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Add touch events for mobile
-    let touchStartX = 0;
-    let touchEndX = 0;
-
     document.addEventListener('touchstart', (e) => {
-        touchStartX = e.changedTouches[0].screenX;
+        if (e.touches.length === 1) {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        } else if (e.touches.length === 2) {
+            isPinching = true;
+        }
     });
 
-    document.addEventListener('touchend', (e) => {
-        touchEndX = e.changedTouches[0].screenX;
-        handleSwipe();
-    });
+    document.addEventListener('touchmove', (e) => {
+        if (isPinching || e.touches.length > 1) {
+            isPinching = true;
+            return; // Allow pinch-to-zoom to work
+        }
 
-    function handleSwipe() {
-        const swipeThreshold = 50; // Minimum distance for swipe
-        const diff = touchStartX - touchEndX;
+        const touchEndX = e.touches[0].clientX;
+        const touchEndY = e.touches[0].clientY;
+        const diffX = touchStartX - touchEndX;
+        const diffY = touchStartY - touchEndY;
 
-        if (Math.abs(diff) > swipeThreshold) {
-            if (diff > 0) {
-                nextSlide(); // Swipe left
+        // Only trigger navigation if the horizontal movement is greater than vertical
+        if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+            e.preventDefault(); // Prevent scrolling
+            if (diffX > 0) {
+                nextSlide();
             } else {
-                prevSlide(); // Swipe right
+                prevSlide();
             }
         }
-    }
+    });
+
+    document.addEventListener('touchend', () => {
+        isPinching = false;
+    });
 }); 

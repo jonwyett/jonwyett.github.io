@@ -7,6 +7,8 @@
 body {
     overflow: hidden;
     background-color: #000;
+    height: 100vh;
+    height: -webkit-fill-available; /* For mobile browsers */
 }
 
 .slideshow-container {
@@ -15,6 +17,7 @@ body {
     left: 0;
     width: 100vw;
     height: 100vh;
+    height: -webkit-fill-available; /* For mobile browsers */
 }
 
 .slide {
@@ -24,6 +27,7 @@ body {
     width: 100%;
     height: 100%;
     display: none;
+    overflow: hidden;
 }
 
 .slide.active {
@@ -34,6 +38,7 @@ body {
     width: 100%;
     height: 100%;
     object-fit: contain;
+    touch-action: pinch-zoom; /* Enable pinch-to-zoom */
 }
 
 .nav-controls {
@@ -43,6 +48,7 @@ body {
     width: 100%;
     height: 100%;
     z-index: 10;
+    pointer-events: none; /* Allow touch events to pass through */
 }
 
 .nav-left, .nav-right {
@@ -52,6 +58,7 @@ body {
     width: 20%;
     cursor: pointer;
     transition: background-color 0.3s;
+    pointer-events: auto; /* Re-enable pointer events for navigation */
 }
 
 .nav-left {
