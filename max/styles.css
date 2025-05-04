@@ -1,0 +1,79 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    overflow: hidden;
+    background-color: #000;
+}
+
+.slideshow-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+}
+
+.slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+}
+
+.slide.active {
+    display: block;
+}
+
+.slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.nav-controls {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+}
+
+.nav-left, .nav-right {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 20%;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.nav-left {
+    left: 0;
+}
+
+.nav-right {
+    right: 0;
+}
+
+.nav-left:hover, .nav-right:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Hide navigation controls on mobile after a few seconds */
+@media (max-width: 768px) {
+    .nav-controls {
+        opacity: 0;
+        transition: opacity 0.5s;
+    }
+    
+    .nav-controls:hover {
+        opacity: 1;
+    }
+} 
