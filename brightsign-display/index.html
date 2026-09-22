@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+
+    <style>
+        html,
+        body {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: black;
+        }
+
+        #display {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <img id="display">
+
+    <script>
+        var currentImage = "";
+        var pollIntervalMs = 60000;
+
+        function loadImage(filename) {
+            if (!filename || filename === currentImage) {
+                return;
+            }
+
+            var preload = new Image();
+
+            preload.onload = function () {
+                document.getElementById("display").src = preload.src;
+                currentImage = filename;
+                console.log("Now displaying: " + filename);
+            };
+
+            preload.onerror = function () {
+                console.log("Could not load image: " + filename);
+            };
+
+            preload.src = "img/" + filename + "?cache=" + Date.now();
+        }
+
+        function checkForUpdate() {
+            fetch("current.json?cache=" + Date.now())
+                .then(function (response) {
+                    if (!response.ok) {
+                        console.log("Could not retrieve current.json");
+                        return null;
+                    }
+
+                    return response.json();
+                })
+                .then(function (data) {
+                    if (data && data.image) {
+                        loadImage(data.image);
+                    }
+                })
+                .catch(function () {
+                    console.log("Error checking for sign update");
+                });
+        }
+
+        checkForUpdate();
+        setInterval(checkForUpdate, pollIntervalMs);
+    </script>
+</body>
+</html>
